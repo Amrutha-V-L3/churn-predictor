@@ -1,0 +1,91 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Churn Predictor</title>
+<meta name="description" content="End-to-end ML: predict telecom customer churn with explanations." />
+<link rel="stylesheet" href="/static/style.css" />
+</head>
+<body>
+<header class="top">
+  <div class="wrap">
+    <div class="brand"><span class="dot"></span>Churn Predictor</div>
+    <nav>
+      <a href="/docs">API docs</a>
+      <a id="repo-link" href="https://github.com/YOUR_USERNAME/churn-predictor" target="_blank" rel="noopener">GitHub</a>
+    </nav>
+  </div>
+</header>
+
+<main class="wrap">
+  <section class="intro">
+    <h1>Will this customer leave?</h1>
+    <p>A gradient-boosted model trained on 7,043 telecom customers. Fill in a profile, or load an example, and see the churn risk with the factors driving it.</p>
+    <div class="presets">
+      <button type="button" class="chip" data-preset="risky">Load high-risk example</button>
+      <button type="button" class="chip" data-preset="loyal">Load loyal-customer example</button>
+    </div>
+  </section>
+
+  <div class="grid">
+    <form id="form" class="card" novalidate>
+      <fieldset>
+        <legend>Account</legend>
+        <label>Tenure (months)<input type="number" name="tenure" min="0" max="120" value="12" required /></label>
+        <label>Contract
+          <select name="Contract"><option>Month-to-month</option><option>One year</option><option>Two year</option></select></label>
+        <label>Gender<select name="gender"><option>Female</option><option>Male</option></select></label>
+        <label>Senior citizen<select name="SeniorCitizen"><option value="0">No</option><option value="1">Yes</option></select></label>
+        <label>Partner<select name="Partner"><option>No</option><option>Yes</option></select></label>
+        <label>Dependents<select name="Dependents"><option>No</option><option>Yes</option></select></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Services</legend>
+        <label>Phone service<select name="PhoneService"><option>Yes</option><option>No</option></select></label>
+        <label>Multiple lines<select name="MultipleLines"><option>No</option><option>Yes</option><option>No phone service</option></select></label>
+        <label>Internet<select name="InternetService"><option>Fiber optic</option><option>DSL</option><option>No</option></select></label>
+        <label>Online security<select name="OnlineSecurity" class="inet"><option>No</option><option>Yes</option><option>No internet service</option></select></label>
+        <label>Online backup<select name="OnlineBackup" class="inet"><option>No</option><option>Yes</option><option>No internet service</option></select></label>
+        <label>Device protection<select name="DeviceProtection" class="inet"><option>No</option><option>Yes</option><option>No internet service</option></select></label>
+        <label>Tech support<select name="TechSupport" class="inet"><option>No</option><option>Yes</option><option>No internet service</option></select></label>
+        <label>Streaming TV<select name="StreamingTV" class="inet"><option>No</option><option>Yes</option><option>No internet service</option></select></label>
+        <label>Streaming movies<select name="StreamingMovies" class="inet"><option>No</option><option>Yes</option><option>No internet service</option></select></label>
+      </fieldset>
+
+      <fieldset>
+        <legend>Billing</legend>
+        <label>Monthly charges ($)<input type="number" name="MonthlyCharges" step="0.01" min="0" value="70" required /></label>
+        <label>Total charges ($)<input type="number" name="TotalCharges" step="0.01" min="0" value="840" required /></label>
+        <label>Paperless billing<select name="PaperlessBilling"><option>Yes</option><option>No</option></select></label>
+        <label>Payment method
+          <select name="PaymentMethod">
+            <option>Electronic check</option><option>Mailed check</option>
+            <option>Bank transfer (automatic)</option><option>Credit card (automatic)</option>
+          </select></label>
+      </fieldset>
+
+      <button type="submit" class="primary" id="submit">Predict churn risk</button>
+    </form>
+
+    <aside class="side">
+      <section id="result" class="card result empty" aria-live="polite">
+        <p class="placeholder">Your prediction will appear here.</p>
+      </section>
+
+      <section class="card info">
+        <h2>Model card</h2>
+        <dl id="model-info"><dt>Loading…</dt></dl>
+      </section>
+    </aside>
+  </div>
+</main>
+
+<footer class="wrap foot">
+  Built with scikit-learn · FastAPI · Docker · GitHub Actions. Dataset: IBM Telco Customer Churn.
+</footer>
+
+<script src="/static/app.js"></script>
+</body>
+</html>

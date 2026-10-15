@@ -1,0 +1,9 @@
+# One-click deploy on Render: New + > Blueprint > pick this repo
+services:
+  - type: web
+    name: churn-predictor
+    runtime: docker
+    plan: free
+    healthCheckPath: /health
+    # Deploys are triggered by GitHub Actions only after tests + quality gate pass
+    autoDeploy: false

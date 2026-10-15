@@ -1,0 +1,51 @@
+name: CI/CD
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+
+jobs:
+  test:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: "3.13"
+          cache: pip
+      - run: pip install -r requirements-dev.txt
+      - name: Lint
+        run: ruff check .
+      - name: Train model
+        run: python -m src.train
+      - name: Quality gate (fail if ROC-AUC drops below 0.80)
+        run: |
+          python -c "import json,sys; auc=json.load(open('models/metadata.json'))['test_metrics']['roc_auc']; print('ROC-AUC', auc); sys.exit(auc < 0.80)"
+      - name: Test
+        run: pytest -q
+
+  docker:
+    needs: test
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build image
+        run: docker build -t churn-predictor .
+      - name: Smoke test container
+        run: |
+          docker run -d -p 8000:8000 --name api churn-predictor
+          for i in $(seq 1 20); do curl -sf localhost:8000/health && break; sleep 2; done
+          curl -sf localhost:8000/model-info
+
+  deploy:
+    needs: docker
+    if: github.ref == 'refs/heads/main' && github.event_name == 'push'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Render deploy
+        env:
+          HOOK: ${{ secrets.RENDER_DEPLOY_HOOK_URL }}
+        run: |
+          if [ -z "$HOOK" ]; then echo "RENDER_DEPLOY_HOOK_URL not set, skipping"; exit 0; fi
+          curl -sf -X POST "$HOOK"
